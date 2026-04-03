@@ -24,13 +24,13 @@ Welcome to the CONTRIBUTING file! Here, any info you might need to contribute an
 - Do not mix responsibilities between layers (ex. don't have database code in the service layer)
 - Avoid using global variables, use constants or configuration files instead
 
-# User Input Validation
+## User Input Validation
 - All user input must be thoroughly validated before entering the system.
 - NEVER trust user input without validation
 - Structured data must be represented using data classes or similar constructs to ensure type safety and clarity. 
 - Collect it carefully, never assuming anything (ex. using int(), assuming they typed a number)
 
-# Function Design
+## Function Design
 - All functions must include type hints and return values
 - Functions should return consistent types 
 - Use Optional[type] for functions that can return None
@@ -38,7 +38,7 @@ Welcome to the CONTRIBUTING file! Here, any info you might need to contribute an
 - Functions should include Docstrings
 - Functions should not exceed ~25 lines, else, split it. Don't split if it's clearly one task.
 
-# Logic & Structure
+## Logic & Structure
 - Avoid hardcoding logic that has meaning ex.
 ```bash
 DO NOT:
@@ -53,7 +53,7 @@ if duration > MAX_SESSION_DURATION...
 - Avoid repetitive code, if you find yourself copy-pasting, consider refactoring into a function or loop
 - Make it clean and readable; don't be afraid of blank lines
 
-# Testing
+## Testing
 - Write tests as you write the functions
 - DO NOT wait until the end to write tests
 - Utilize fixtures
@@ -61,7 +61,7 @@ if duration > MAX_SESSION_DURATION...
 - Never test in the main database. Always create a test database that is auto-deleted.
 - Don't be afraid to comment here. People need to understand your tests.
 
-# Commit Messages
+## Commit Messages
 - Write commit messages that describe what changed and why.
 - No commits over 2 sentences, if so, try separating commits.
 - Commit after completing a logical unit of work, not after every line.
