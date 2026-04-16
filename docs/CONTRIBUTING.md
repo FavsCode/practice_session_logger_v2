@@ -24,7 +24,7 @@ Welcome to the CONTRIBUTING file! Here, any info you might need to contribute an
 - Do not mix responsibilities between layers (ex. don't have database code in the service layer)
 - Avoid using global variables, use constants or configuration files instead
 
-# User Input Validation
+## User Input Validation
 - All user input must be thoroughly validated before entering the system.
 - NEVER trust user input without validation
 - Structured data must be represented using data classes or similar constructs to ensure type safety and clarity. 
