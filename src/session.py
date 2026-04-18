@@ -7,14 +7,14 @@ from .database import insert_session, delete_session as db_delete_session, updat
 
 @dataclass
 class Session:
-    date: date
+    date: date | str
     duration: int
     focus: str = "No Focus"
     notes: str | None = None
     id: int | None = None
     
     def __post_init__(self):
-        if not isinstance(self.date, date):
+        if not isinstance(self.date, (date, str)):
             raise ValueError("Date must be a date object.")
         if not isinstance(self.duration, int):
             raise ValueError("Duration must be an integer.")
@@ -33,44 +33,34 @@ def check_date_format(date_str: str) -> date | bool:
     except ValueError:
         return False
 
-def create_session(date: str,
-                   duration: int,
-                   focus: str = "No Focus", 
-                   notes: str | None = None, 
-                   id: int | None = None,
+def create_session(Session,
                    path: Path | None = None) -> str:
     """Creates new session with user-inputted information."""
-    if not check_date_format(date):
+    if not check_date_format(Session.date):
         return "Error: Invalid date format."
     
-    user_date = check_date_format(date)
-    
+    user_date = check_date_format(Session.date)
+    Session.date = user_date # We are mutating the Session object to be a date object instead of a string.
+
     try: 
-        duration = int(duration)
+        Session.duration = int(Session.duration)
     except ValueError:
         return "Error: Invalid duration format."
     try:
-        focus = str(focus)
-        if not focus:
-            focus = "No Focus"
+        Session.focus = str(Session.focus)
+        if not Session.focus:
+            Session.focus = "No Focus"
     except ValueError:
         return "Error: Invalid focus format."
     try:
-        notes = str(notes) if notes is not None else None
+        Session.notes = str(Session.notes) if Session.notes is not None else None
     except ValueError:        
         return "Error: Invalid notes format."
 
-    # User date is already validated, so this will not return an error.
-    new_session = Session(date=user_date, # type: ignore
-                          duration=duration, 
-                          focus=focus, 
-                          notes=notes, 
-                          id=id) 
-    
     if path:
-        insert_session(new_session, path=path)
+        insert_session(Session, path=path)
     else:
-        insert_session(new_session)
+        insert_session(Session)
 
     return "Session successfully created."
 

@@ -25,6 +25,19 @@ def menu() -> None:
           "\n5. Exit")
     divider()
 
+def view_sessions() -> None:
+    """Displays all sessions."""
+    sessions = read_sessions(None) # Error with no input for some reason, so it's set to None
+    if sessions:
+        divider()
+        print("Sessions:")
+        for session in sessions:
+            print(f"\nDate: {session[1]}, Duration: {session[2]} minutes, Focus: {session[3]}, Notes: {session[4]}")
+        divider()
+    else:
+        print("\nNo sessions found.")
+        divider()
+
 def selection_add() -> None:
     """Handles the logic for adding a new session."""
     example_input = "2023-09-15, 60, Scales, Nice major scales!"
@@ -46,25 +59,19 @@ def selection_add() -> None:
         menu()
         return
 
-    result = create_session(date, duration, focus, notes)
+    data = Session(date=date, # type: ignore
+                   duration=duration, 
+                   focus=focus, 
+                   notes=notes)
+    result = create_session(data, None) # Error with no input for some reason, so it's set to None
     print(f"\n{result}")
     divider()
     menu()
     
 def selection_view() -> None:
     """Handles the logic for viewing all sessions."""
-    sessions = read_sessions(None) # Error with no input for some reason, so it's set to None
-    if sessions:
-        divider()
-        print("Sessions:")
-        for session in sessions:
-            print(f"\nDate: {session[1]}, Duration: {session[2]} minutes, Focus: {session[3]}, Notes: {session[4]}")
-        divider()
-        menu()
-    else:
-        print("\nNo sessions found.")
-        divider()
-        menu()
+    view_sessions()
+    menu()
 
 def selection_update() -> None:
     """Handles the logic for updating a session."""
@@ -72,14 +79,9 @@ def selection_update() -> None:
           "\nTo update a session, you will need to provide the date of the session you want to update and the aspect you want to change (date, duration, focus, notes)."
           "\nExample input for aspect: date"
           "\nExample input for new value: 2023-09-16")
-    divider()
 
     # Display all sessions before updating
-    sessions = read_sessions(None) # Error with no input for some reason, so it's set to None
-    print("\nSessions:")
-    for session in sessions:
-        print(f"Date: {session[1]}, Duration: {session[2]} minutes, Focus: {session[3]}, Notes: {session[4]}")
-    divider()
+    view_sessions()
 
     # Update the sessions
     date = input("Enter the date of the session you want to update (YYYY-MM-DD): ")

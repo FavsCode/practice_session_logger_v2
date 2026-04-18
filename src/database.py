@@ -23,13 +23,13 @@ def create_db(path: Path | str = '.practice_sessions.sqlite') -> None:
         '''
     execute_command(sql, path=path)
 
-def insert_session(session, path: Path | str = 'practice_sessions.sqlite') -> None:
+def insert_session(Session, path: Path | str = 'practice_sessions.sqlite') -> None:
     """Inserts session data to the database."""
     sql = '''
         INSERT INTO practice_sessions (date, duration, focus, notes) 
         VALUES (?, ?, ?, ?)
         '''
-    params = (session.date.isoformat(), session.duration, session.focus, session.notes)
+    params = (Session.date.isoformat(), Session.duration, Session.focus, Session.notes)
     execute_command(sql, params, path)
 
 def delete_session(date: date, path: Path | str = 'practice_sessions.sqlite') -> None:
