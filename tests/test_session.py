@@ -97,8 +97,16 @@ def test_update_session_changes_session_data(database_path: Path, test_data: lis
 def test_delete_session_deletes_session_data(database_path: Path, test_data: list[Session]) -> None:
     create_test_sessions(database_path, test_data)
 
-    delete_session("2026-03-21", path=database_path)
-
+    date = "2026-03-21"
+    session = get_session_by_date(date, path=database_path)
+    if session:
+        print(f"[{session.id}] Duration: {session.duration} minutes, Focus: {session.focus}, Notes: {session.notes}")
+    elif session is None:
+        print(f"No session found for the date: {date}")
+        raise ValueError("Session not found.")
+    
+    id = session.id
+    delete_session(id , path=database_path) # type: ignore id is NOT none by this point, so the type is ignored.
     sessions = read_sessions(path=database_path)
 
     assert len(sessions) == 2

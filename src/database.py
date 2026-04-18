@@ -33,13 +33,13 @@ def insert_session(Session, path: Path | str = 'practice_sessions.sqlite') -> No
     params = (Session.date.isoformat(), Session.duration, Session.focus, Session.notes)
     execute_command(sql, params, path)
 
-def delete_session(date: date, path: Path | str = 'practice_sessions.sqlite') -> None:
+def delete_session(id: int, path: Path | str = 'practice_sessions.sqlite') -> None:
     """Deletes session data from the database."""
     sql = '''
         DELETE FROM practice_sessions
-        WHERE date = ?
+        WHERE id = ?
         '''
-    params = (date.isoformat(),)
+    params = (id,)
     execute_command(sql, params, path)
 
 def update_session(session: Session, path: Path | str = 'practice_sessions.sqlite') -> None:

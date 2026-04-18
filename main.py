@@ -134,16 +134,43 @@ def selection_delete() -> None:
         print(f"Date: {session[1]}, Duration: {session[2]} minutes, Focus: {session[3]}, Notes: {session[4]}")
     divider()
 
+    # Delete the session
     date = input("Enter the date of the session you want to delete (YYYY-MM-DD): ")
+
+    print(f"\nSessions on {date}:")
+
+    session = get_session_by_date(date, None)
+    if session:
+        print(f"[{session.id}] Duration: {session.duration} minutes, Focus: {session.focus}, Notes: {session.notes}")
+    else:
+        print(f"No session found for the date: {date}")
+        divider()
+        menu()
+        return
+    try:
+        id = int(input("Enter the ID of the session you want to delete: "))
+    except ValueError:
+        print("\nError: ID must be an integer.")
+        divider()
+        menu()
+        return
+    
+    correct_id = id == session.id
+    if not correct_id:
+        print(f"\nError: No session found with ID: {id} for the date: {date}")
+        divider()
+        menu()
+        return
+    
     # Just in case
-    y_n = input(f"Are you sure you want to delete the session on {date}? (y/n): ")
+    y_n = input(f"Are you sure you want to delete this session on {date} with id [{id}]? (y/n): ")
     if y_n.lower() != "y":
         print("\nSession deletion cancelled.")
         divider()
         menu()
         return
     
-    result = delete_session(date, None)
+    result = delete_session(id, None)
     print(f"\n{result}")
     divider()
     menu()

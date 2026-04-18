@@ -65,17 +65,14 @@ def update_session(session: Session, path: None | Path) -> str:
 
     return "Session updated successfully."
 
-def delete_session(date: str, path: None | Path) -> str:
+def delete_session(id: int, path: None | Path) -> str:
     """Deletes a session's data."""
-    user_date = check_date_format(date)
-    if not user_date:
-        return "\nError: Invalid date format."
     
     # User date is validated, so its value will not be False, so the type is ignored.
     if path:
-        db_delete_session(date=user_date, path=path) # type: ignore
+        db_delete_session(id=id, path=path) # type: ignore
     else: 
-        db_delete_session(date=user_date) # type: ignore
+        db_delete_session(id=id) # type: ignore
 
     return "Session deleted successfully."
 
