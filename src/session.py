@@ -1,30 +1,9 @@
 """This module contains the Session dataclass and functions to create, read, update, and delete sessions. It is the service layer of the application."""
-from dataclasses import dataclass
 from datetime import date, datetime
-from os import path
 from pathlib import Path
 from .database import insert_session, delete_session as db_delete_session, update_session as db_update_session, select_sessions
+from .models import Session
 
-@dataclass
-class Session:
-    date: date | str
-    duration: int
-    focus: str = "No Focus"
-    notes: str | None = None
-    id: int | None = None
-    
-    def __post_init__(self):
-        if not isinstance(self.date, (date, str)):
-            raise ValueError("Date must be a date object.")
-        if not isinstance(self.duration, int):
-            raise ValueError("Duration must be an integer.")
-        if not isinstance(self.focus, str):
-            raise ValueError("Focus must be a string.")
-        if self.focus == "":
-            self.focus = "No Focus"
-        if self.notes is not None and not isinstance(self.notes, str):
-            raise ValueError("Notes must be a string or None.")
-        
 def check_date_format(date_str: str) -> date | bool:
     """Checks if the date string is in the correct format."""
     try:
@@ -71,22 +50,18 @@ def read_sessions(path: Path | None) -> list[tuple]:
     else:
         return select_sessions(path=path)
 
-def update_session(session_aspect: str, edit: str | int, date: str, path: None | Path) -> str:
+def update_session(session: Session, path: None | Path) -> str:
     """Replaces a session's data with new user-inputted info."""
-    valid = valid_session_aspect(session_aspect, edit)
-    if valid is not True: # If valid is not True, it is an error message.
-        return valid # type: ignore
-    
     try:
-        user_date = datetime.strptime(str(date), "%Y-%m-%d").date()
+        session.date = datetime.strptime(str(session.date), "%Y-%m-%d").date()
     except ValueError:
         return "Error: Invalid date format."
 
     if path:
         # update_session defaults to the regular database, but if a path is provided, it is a testing path.
-        db_update_session(session_aspect, edit, user_date, path)
+        db_update_session(session, path)
     else:
-        db_update_session(session_aspect, edit, user_date) # ignore
+        db_update_session(session) 
 
     return "Session updated successfully."
 
@@ -113,21 +88,21 @@ def see_last_session(path: None | Path) -> str:
     last_session = sessions[-1]
     return f"Date: {last_session[1]}, Duration: {last_session[2]} minutes, Focus: {last_session[3]}, Notes: {last_session[4]}"
 
-def valid_session_aspect(session_aspect: str, aspect) -> str | bool:
-    """Runs all tests on the session aspect to prove it is a valid value."""
-    allowed_fields = {"duration", "focus", "notes", "date"}
-
-    if session_aspect not in allowed_fields:
-        return (f"Invalid session aspect: {session_aspect}. Allowed aspects are: {allowed_fields}")
+def get_session_by_date(date: str, path: None | Path) -> Session | None:
+    """Returns a session object based on the date."""
+    user_date = check_date_format(date)
+    if not user_date:
+        print("Error: Invalid date format.")
+        return None
     
-    try:
-        if session_aspect == "duration":
-            aspect = int(aspect)
-        elif session_aspect in {"focus", "notes", "date"}:
-            aspect = str(aspect)
-            if session_aspect == "focus" and aspect == "":
-                aspect = "No Focus"
-    except ValueError:
-        return "Error: Invalid aspect format."
+    sessions = read_sessions(path)
+    for session in sessions:
+        if session[1] == str(datetime.strptime(str(user_date), "%Y-%m-%d").date()): # session[1] is the date in the database, which is a string, so we convert the user_date to a string for comparison.
+            return Session(date=datetime.strptime(str(session[1]), "%Y-%m-%d").date(), 
+                           duration=session[2], 
+                           focus=session[3], 
+                           notes=session[4], 
+                           id=session[0])
     
-    return True
+    print("Session not found.")
+    return None

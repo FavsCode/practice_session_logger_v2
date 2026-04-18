@@ -1,6 +1,7 @@
 """Entry point for the Practice Logger."""
 from src.database import create_db
-from src.session import Session, create_session, read_sessions, update_session, delete_session, see_last_session
+from src.session import get_session_by_date, create_session, read_sessions, update_session, delete_session, see_last_session
+from src.models import Session
 
 def divider() -> None:
     """Prints a divider line for better readability."""
@@ -87,8 +88,34 @@ def selection_update() -> None:
     date = input("Enter the date of the session you want to update (YYYY-MM-DD): ")
     session_aspect = input("Enter the aspect you want to update (date, duration, focus, notes): ")
     edit = input(f"Enter the new value for {session_aspect}: ")
-            
-    result = update_session(session_aspect, edit, date, None)
+
+    session = get_session_by_date(date, None)
+    if session is None:
+        print(f"\nNo session found for the date: {date}")
+        divider()
+        menu()
+        return
+    if session_aspect == "date":
+        session.date = edit
+    elif session_aspect == "duration":
+        try:
+            session.duration = int(edit)
+        except ValueError:
+            print("\nError: Duration must be an integer representing minutes.")
+            divider()
+            menu()
+            return
+    elif session_aspect == "focus": 
+        session.focus = edit
+    elif session_aspect == "notes":
+        session.notes = edit
+    else:
+        print("\nError: Invalid session aspect.")
+        divider()
+        menu()
+        return
+
+    result = update_session(session, None)
     print(f"\n{result}")
     divider()
     menu()

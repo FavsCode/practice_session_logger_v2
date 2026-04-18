@@ -67,4 +67,3 @@ if duration > MAX_SESSION_DURATION...
 - Commit after completing a logical unit of work, not after every line.
 - Push after each commit, don't wait until the end to push.
 - Be straight-to-the-point and concise
-- Add an additional, more in-depth log in DEVELOPMENT_LOG.md everytime you make a commit, following the existing style.

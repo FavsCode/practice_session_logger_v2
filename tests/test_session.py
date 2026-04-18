@@ -1,9 +1,9 @@
 """Tests for the session module."""
 import pytest
-from datetime import datetime
 from pathlib import Path
-from src.session import Session, create_session, read_sessions, see_last_session, update_session, delete_session
+from src.session import get_session_by_date, create_session, read_sessions, see_last_session, update_session, delete_session
 from src.database import create_db
+from src.models import Session
 
 @pytest.fixture
 def database_path(tmp_path: Path) -> Path:
@@ -64,11 +64,29 @@ def test_read_sessions_returns_list_of_sessions(database_path: Path, test_data: 
 
 def test_update_session_changes_session_data(database_path: Path, test_data: list[Session]) -> None:
     create_test_sessions(database_path, test_data)
+    # Session 1
+    session_1 = get_session_by_date("2026-02-20", path=database_path)
+    if session_1 is None:
+        raise ValueError("Session not found.")
+    
+    session_1.duration = 90  
+    session_1.focus = "Recreation"
+    update_session(session_1, path=database_path)
 
-    update_session("duration", 90, "2026-02-20", database_path)
-    update_session("notes", "Good practice.", "2026-03-21", database_path)
-    update_session("date", "2026-04-23", "2026-04-22", database_path)
-    update_session("focus", "Recreation", "2026-02-20", database_path)
+    # Session 2
+    session_2 = get_session_by_date("2026-03-21", path=database_path)
+    if session_2 is None:
+        raise ValueError("Session not found.")
+    
+    session_2.notes = "Good practice."
+    update_session(session_2, path=database_path)
+
+    # Session 3
+    session_3 = get_session_by_date("2026-04-22", path=database_path)
+    if session_3 is None:
+        raise ValueError("Session not found.")
+    session_3.date = "2026-04-23"
+    update_session(session_3, path=database_path)
 
     sessions = read_sessions(path=database_path)
 

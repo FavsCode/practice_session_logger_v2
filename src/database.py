@@ -2,6 +2,7 @@
 import sqlite3
 from datetime import date
 from pathlib import Path
+from .models import Session
 
 def execute_command(sql: str, params: tuple=(), path: Path | str = 'practice_sessions.sqlite') -> None:
     """Connects to and executes commands on the SQLite database."""
@@ -41,16 +42,20 @@ def delete_session(date: date, path: Path | str = 'practice_sessions.sqlite') ->
     params = (date.isoformat(),)
     execute_command(sql, params, path)
 
-def update_session(session_aspect: str, edit: str | int, date: date, path: Path | str = 'practice_sessions.sqlite') -> None:
+def update_session(session: Session, path: Path | str = 'practice_sessions.sqlite') -> None:
     """Updates session data from the database."""
-    sql = f'''
+    sql = '''
         UPDATE practice_sessions
-        SET {session_aspect} = ?
-        WHERE date = ?
+        SET date = ?, duration = ?, focus = ?, notes = ?
+        WHERE id = ?
         '''
-    params = (edit, date.isoformat())
+    params = (session.date.isoformat(), # type: ignore The date will be a date object and not a string by now.
+              session.duration,
+              session.focus,
+              session.notes,
+              session.id) # The session will have an ID attribute when it is passed from get_session_by_date.
     execute_command(sql, params, path)
-
+    
 def select_sessions(path: Path | str = 'practice_sessions.sqlite') -> list[tuple]:
     """Selects all session data from the database."""
     with sqlite3.connect(path) as sqlite_connection:
